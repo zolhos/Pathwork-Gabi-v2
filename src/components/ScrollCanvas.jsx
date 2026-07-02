@@ -43,7 +43,7 @@ export default function ScrollCanvas() {
     
     // Create hidden video element
     const video = document.createElement("video");
-    video.src = "/Lotus_seed_to_bloom_time-lapse_202607020015.mp4";
+    video.src = "/Pathwork-Gabi-v2/Lotus_seed_to_bloom_time-lapse_202607020015.mp4";
     video.preload = "auto";
     video.playsInline = true;
     video.muted = true;
