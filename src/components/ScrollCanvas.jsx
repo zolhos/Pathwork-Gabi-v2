@@ -43,6 +43,9 @@ export default function ScrollCanvas() {
     const totalFrames = 240;
     let loadedCount = 0;
 
+    // Timeline snap progress points (Hero, Card 1-8 peaks, and Final section)
+    const snapPoints = [0, 0.23, 0.295, 0.36, 0.425, 0.49, 0.555, 0.62, 0.685, 1.0];
+
     // Helper to draw a specific frame image to the canvas
     const drawFrame = (frameIndex) => {
       const img = imagesRef.current[frameIndex];
@@ -89,7 +92,6 @@ export default function ScrollCanvas() {
         };
 
         img.onerror = () => {
-          // If a frame fails to load, count it anyway to prevent app lock
           loadedCount++;
           if (loadedCount === totalFrames) {
             setVideoLoaded(true);
@@ -107,7 +109,6 @@ export default function ScrollCanvas() {
       if (canvas) {
         canvas.width = window.innerWidth;
         canvas.height = window.innerHeight;
-        // Re-draw current frame index based on scroll position
         const scrollTrigger = ScrollTrigger.getById("master-scroll");
         if (scrollTrigger) {
           const currentFrame = Math.min(Math.floor(scrollTrigger.progress * (totalFrames - 1)), totalFrames - 1);
@@ -124,24 +125,60 @@ export default function ScrollCanvas() {
     let mainTimeline = null;
 
     const initAnimationTimeline = () => {
-      // 1. Create a proxy object to smooth out the frame index transitions via GSAP scrub
       const frameProxy = { frame: 0 };
 
-      // 2. Set initial CSS states using 3D hardware-accelerated transforms
+      // Set initial CSS states using 3D hardware-accelerated transforms
       gsapRaw.set("#hero-layer", { transform: "translate3d(0, -50%, 0)", opacity: 1 });
       gsapRaw.set(".fase-2-card", { transform: "translate3d(0, 30px, 0)", opacity: 0, pointerEvents: "none" });
       gsapRaw.set("#final-layer", { opacity: 0, pointerEvents: "none" });
       gsapRaw.set("#final-layer-content", { transform: "translate3d(0, 40px, 0)" });
       gsapRaw.set("#light-background", { opacity: 0 });
 
-      // 3. Create a master timeline with scrub damping
+      // Create a master timeline with scrub damping and snap points
       mainTimeline = gsapRaw.timeline({
         id: "master-scroll",
         scrollTrigger: {
           trigger: "#scroll-wrapper",
           start: "top top",
           end: "bottom bottom",
-          scrub: 1.5, // Damping effect to prevent scroll snapping/stuttering
+          scrub: 1.5,
+          snap: {
+            snapTo: snapPoints,
+            duration: { min: 0.2, max: 0.5 },
+            delay: 0.05,
+            ease: "power2.inOut"
+          },
+          onUpdate: (self) => {
+            const progress = self.progress;
+            
+            // Toggle visibility of the floating assist navigation panel
+            const nav = document.getElementById("floating-nav");
+            if (nav) {
+              if (progress >= 0.18 && progress <= 0.74) {
+                nav.style.opacity = "1";
+                nav.style.pointerEvents = "auto";
+              } else {
+                nav.style.opacity = "0";
+                nav.style.pointerEvents = "none";
+              }
+            }
+
+            // Update numerical indicator values based on scroll progression
+            const cardIndex = Math.min(
+              Math.max(Math.floor((progress - 0.18) / 0.065), 0),
+              7
+            );
+            const indicator = document.getElementById("nav-indicator");
+            if (indicator) {
+              indicator.textContent = `${String(cardIndex + 1).padStart(2, "0")} / 08`;
+            }
+
+            // Disable buttons dynamically if at first or last cards
+            const prevButton = document.getElementById("nav-prev-btn");
+            const nextButton = document.getElementById("nav-next-btn");
+            if (prevButton) prevButton.disabled = progress < 0.21;
+            if (nextButton) nextButton.disabled = progress > 0.69;
+          }
         }
       });
 
@@ -149,14 +186,14 @@ export default function ScrollCanvas() {
       mainTimeline.to(frameProxy, {
         frame: totalFrames - 1,
         ease: "none",
-        duration: 10, // Virtual relative timeline length
+        duration: 10,
         onUpdate: () => {
           const frameIndex = Math.min(Math.floor(frameProxy.frame), totalFrames - 1);
           drawFrame(frameIndex);
         }
       }, 0);
 
-      // --- FASE 1: Hero Fade out (Frames 0-75 -> approx 0% to 31% of scroll) ---
+      // --- FASE 1: Hero Fade out (Frames 0-75) ---
       mainTimeline.to("#hero-layer", {
         opacity: 0,
         x: -50,
@@ -174,14 +211,14 @@ export default function ScrollCanvas() {
         duration: 3
       }, 0);
 
-      // --- FASE 2: Staggered entry/exit of micro-cards (Frames 76-165 -> approx 31% to 68%) ---
+      // --- FASE 2: Staggered entry/exit of micro-cards (Frames 76-165) ---
       const cards = gsapRaw.utils.toArray(".fase-2-card");
-      const cardStep = 5.2 / cards.length; // 0.65 spacing between entry triggers
+      const cardStep = 5.2 / cards.length;
 
       cards.forEach((card, index) => {
         const start = 2.0 + index * cardStep;
 
-        // Card Entry (Uses translate3d on GPU)
+        // Card Entry
         mainTimeline.to(card, {
           opacity: 1,
           y: 0,
@@ -190,7 +227,7 @@ export default function ScrollCanvas() {
           duration: 0.45
         }, start);
 
-        // Card Exit (starts at 0.6s offset, gone in 0.45s)
+        // Card Exit
         mainTimeline.to(card, {
           opacity: 0,
           y: -40,
@@ -200,10 +237,9 @@ export default function ScrollCanvas() {
         }, start + 0.6);
       });
 
-      // --- FASE 3: Final Layer fade-in (Frames 166-240 -> approx 68% to 100%) ---
-      // Fade in the solid light backing page to hide canvas noise and guarantee legibility
+      // --- FASE 3: Final Layer fade-in (Frames 166-240) ---
       mainTimeline.to("#light-background", {
-        opacity: 0.96, // Near solid light-grey cover
+        opacity: 0.96,
         ease: "power1.in",
         duration: 1.5
       }, 7.5);
@@ -221,6 +257,34 @@ export default function ScrollCanvas() {
         duration: 1.5,
       }, 8.0);
     };
+
+    // Attach click listeners to next/prev assist buttons
+    const nextBtn = document.getElementById("nav-next-btn");
+    const prevBtn = document.getElementById("nav-prev-btn");
+
+    const handleNext = () => {
+      const trigger = ScrollTrigger.getById("master-scroll");
+      if (trigger) {
+        const currentProgress = trigger.progress;
+        const nextSnap = snapPoints.find(p => p > currentProgress + 0.01) || 1.0;
+        const targetScroll = trigger.start + nextSnap * (trigger.end - trigger.start);
+        lenis.scrollTo(targetScroll, { duration: 1.2 });
+      }
+    };
+
+    const handlePrev = () => {
+      const trigger = ScrollTrigger.getById("master-scroll");
+      if (trigger) {
+        const currentProgress = trigger.progress;
+        const revSnapPoints = [...snapPoints].reverse();
+        const prevSnap = revSnapPoints.find(p => p < currentProgress - 0.01) || 0.0;
+        const targetScroll = trigger.start + prevSnap * (trigger.end - trigger.start);
+        lenis.scrollTo(targetScroll, { duration: 1.2 });
+      }
+    };
+
+    if (nextBtn) nextBtn.addEventListener("click", handleNext);
+    if (prevBtn) prevBtn.addEventListener("click", handlePrev);
 
     // Magnetic effect on WhatsApp CTA button
     const ctaBtn = document.querySelector(".magnetic-btn");
@@ -261,32 +325,29 @@ export default function ScrollCanvas() {
         ctaBtn.removeEventListener("mousemove", handleMouseMove);
         ctaBtn.removeEventListener("mouseleave", handleMouseLeave);
       }
-      // Clear image cache on unmount
+      if (nextBtn) nextBtn.removeEventListener("click", handleNext);
+      if (prevBtn) prevBtn.removeEventListener("click", handlePrev);
       imagesRef.current = [];
     };
   }, []);
 
   return (
     <>
-      {/* Fixed Fullscreen Canvas Backdrop */}
       <canvas
         ref={canvasRef}
         className="fixed inset-0 w-full h-full object-cover -z-20 pointer-events-none"
       />
       
-      {/* Fases Overlay effects */}
       <div 
         id="indigo-glow" 
         className="fixed inset-0 glow-purple -z-10 pointer-events-none transition-opacity duration-300"
       />
       
-      {/* Light Noon Background for Fase 3 (bloom) - Opaque White backing panel */}
       <div 
         id="light-background" 
         className="fixed inset-0 bg-[#f7f7f9] opacity-0 -z-10 pointer-events-none"
       />
 
-      {/* Loading Placeholder with progress counter */}
       {!videoLoaded && (
         <div className="fixed inset-0 bg-[#0a0a0a] z-50 flex items-center justify-center">
           <div className="flex flex-col items-center gap-4">
