@@ -1,19 +1,19 @@
 "use client";
 
 import { useEffect, useRef, useState } from "react";
-import gsap from "gsap";
+import gsapRaw from "gsap";
 import { ScrollTrigger } from "gsap/ScrollTrigger";
 import Lenis from "lenis";
 
-gsap.registerPlugin(ScrollTrigger);
-
 export default function ScrollCanvas() {
   const canvasRef = useRef(null);
-  const containerRef = useRef(null);
   const [videoLoaded, setVideoLoaded] = useState(false);
   const videoRef = useRef(null);
 
   useEffect(() => {
+    // Register ScrollTrigger plugin
+    gsapRaw.registerPlugin(ScrollTrigger);
+
     // Initialize Lenis Smooth Scroll
     const lenis = new Lenis({
       duration: 1.2,
@@ -32,12 +32,11 @@ export default function ScrollCanvas() {
 
     // Sync Lenis with GSAP ScrollTrigger
     lenis.on("scroll", ScrollTrigger.update);
-    gsap.ticker.add((time) => {
+    gsapRaw.ticker.add((time) => {
       lenis.raf(time * 1000);
     });
-    gsap.ticker.lagSmoothing(0);
+    gsapRaw.ticker.lagSmoothing(0);
 
-    // Setup Video and Canvas scrubbing
     const canvas = canvasRef.current;
     const ctx = canvas.getContext("2d");
     
@@ -50,7 +49,6 @@ export default function ScrollCanvas() {
     video.loop = false;
     videoRef.current = video;
 
-    // Handle canvas sizing
     const resizeCanvas = () => {
       canvas.width = window.innerWidth;
       canvas.height = window.innerHeight;
@@ -59,7 +57,6 @@ export default function ScrollCanvas() {
 
     const drawFrame = () => {
       if (video.readyState >= 2) {
-        // Draw video fitting the canvas (object-cover logic)
         const videoRatio = video.videoWidth / video.videoHeight;
         const canvasRatio = canvas.width / canvas.height;
         let drawWidth, drawHeight, xOffset, yOffset;
@@ -84,122 +81,132 @@ export default function ScrollCanvas() {
       setVideoLoaded(true);
       resizeCanvas();
       window.addEventListener("resize", resizeCanvas);
+      initAnimationTimeline();
     });
 
-    // Make sure we draw whenever video is seeked
     video.addEventListener("seeked", drawFrame);
 
-    // GSAP ScrollTrigger logic linked to scroll position
-    let scrollTriggerInstance = null;
+    let mainTimeline = null;
 
-    if (video) {
-      scrollTriggerInstance = ScrollTrigger.create({
-        trigger: "#scroll-wrapper",
-        start: "top top",
-        end: "bottom bottom",
-        scrub: true,
-        onUpdate: (self) => {
-          // Sync video current time directly to scroll progress
-          if (video.duration) {
-            const targetTime = self.progress * video.duration;
-            video.currentTime = Math.min(targetTime, video.duration - 0.05);
-          }
-          
-          // Animate layers based on current frame (out of 240 frames total)
-          const currentFrame = self.progress * 240;
-          
-          // --- FASE 1 (Frames 0-75) ---
-          const heroLayer = document.querySelector("#hero-layer");
-          const bgOverlay = document.querySelector("#indigo-glow");
-          if (heroLayer) {
-            if (currentFrame <= 75) {
-              const opacity = 1 - currentFrame / 75;
-              heroLayer.style.opacity = opacity;
-              heroLayer.style.transform = `translate3d(-${(currentFrame / 75) * 50}px, -50%, 0)`;
-              heroLayer.style.pointerEvents = opacity < 0.1 ? "none" : "auto";
-            } else {
-              heroLayer.style.opacity = 0;
-              heroLayer.style.pointerEvents = "none";
-            }
-          }
-          if (bgOverlay) {
-            if (currentFrame <= 75) {
-              bgOverlay.style.opacity = 1 - currentFrame / 75;
-            } else {
-              bgOverlay.style.opacity = 0;
-            }
-          }
+    const initAnimationTimeline = () => {
+      // 1. Create a proxy object to smooth out the video currentTime changes via GSAP scrub
+      const videoProxy = { currentTime: 0 };
 
-          // --- FASE 2 (Frames 76-165) ---
-          const cards = document.querySelectorAll(".fase-2-card");
-          if (cards.length > 0) {
-            // Target frames range: 76 to 165
-            cards.forEach((card, index) => {
-              const startFrame = 76 + index * 12; // stagger entry
-              const peakFrame = startFrame + 20;
-              const endFrame = peakFrame + 25;
+      // 2. Set initial CSS states for performance (will use transform3d)
+      gsapRaw.set("#hero-layer", { transform: "translate3d(0, -50%, 0)", opacity: 1 });
+      gsapRaw.set(".fase-2-card", { transform: "translate3d(0, 30px, 0)", opacity: 0, pointerEvents: "none" });
+      gsapRaw.set("#final-layer", { transform: "translate3d(-50%, -45%, 0)", opacity: 0, pointerEvents: "none" });
+      gsapRaw.set("#light-background", { opacity: 0 });
 
-              if (currentFrame >= startFrame && currentFrame <= endFrame) {
-                let opacity = 0;
-                if (currentFrame < peakFrame) {
-                  // Fade in
-                  opacity = (currentFrame - startFrame) / (peakFrame - startFrame);
-                } else {
-                  // Fade out
-                  opacity = 1 - (currentFrame - peakFrame) / (endFrame - peakFrame);
-                }
-                card.style.opacity = opacity;
-                card.style.transform = `translate3d(0, ${(1 - opacity) * 20}px, 0)`;
-                card.style.pointerEvents = opacity < 0.1 ? "none" : "auto";
-              } else {
-                card.style.opacity = 0;
-                card.style.pointerEvents = "none";
-              }
-            });
-          }
-
-          // --- FASE 3 (Frames 166-240) ---
-          const finalLayer = document.querySelector("#final-layer");
-          const finalBackground = document.querySelector("#light-background");
-          if (finalLayer) {
-            if (currentFrame >= 166) {
-              const opacity = (currentFrame - 166) / (240 - 166);
-              finalLayer.style.opacity = opacity;
-              finalLayer.style.transform = `translate3d(-50%, -${50 + (1 - opacity) * 10}%, 0)`;
-              finalLayer.style.pointerEvents = opacity < 0.1 ? "none" : "auto";
-            } else {
-              finalLayer.style.opacity = 0;
-              finalLayer.style.pointerEvents = "none";
-            }
-          }
-          if (finalBackground) {
-            if (currentFrame >= 166) {
-              finalBackground.style.opacity = (currentFrame - 166) / (200 - 166); // Quick fade-in of white backdrop
-            } else {
-              finalBackground.style.opacity = 0;
-            }
-          }
+      // 3. Create a master timeline with scrub damping
+      mainTimeline = gsapRaw.timeline({
+        scrollTrigger: {
+          trigger: "#scroll-wrapper",
+          start: "top top",
+          end: "bottom bottom",
+          scrub: 1.5, // Damping effect to prevent scroll snapping/stuttering
         }
       });
-    }
 
-    // Magnetic effect on WhatsApp CTA button in Fase 3
+      // Animate video playback via proxy
+      mainTimeline.to(videoProxy, {
+        currentTime: video.duration || 8,
+        ease: "none",
+        duration: 10, // Virtual relative timeline length
+        onUpdate: () => {
+          if (video.duration) {
+            video.currentTime = videoProxy.currentTime;
+          }
+        }
+      }, 0);
+
+      // --- FASE 1: Hero Fade out (Frames 0-75 -> approx 0% to 31% of scroll) ---
+      mainTimeline.to("#hero-layer", {
+        opacity: 0,
+        x: -50,
+        ease: "power1.inOut",
+        duration: 3,
+        onUpdate: function() {
+          const hero = document.querySelector("#hero-layer");
+          if (hero) hero.style.pointerEvents = this.progress() > 0.8 ? "none" : "auto";
+        }
+      }, 0);
+      
+      mainTimeline.to("#indigo-glow", {
+        opacity: 0,
+        ease: "none",
+        duration: 3
+      }, 0);
+
+      // --- FASE 2: Staggered entry/exit of micro-cards (Frames 76-165 -> approx 31% to 68%) ---
+      const cards = gsapRaw.utils.toArray(".fase-2-card");
+      const cardStep = 4 / cards.length; // virtual time mapping
+
+      cards.forEach((card, index) => {
+        const start = 2.5 + index * cardStep;
+        const peak = start + cardStep * 0.4;
+        const end = start + cardStep;
+
+        // Card Entry
+        mainTimeline.to(card, {
+          opacity: 1,
+          y: 0,
+          pointerEvents: "auto",
+          ease: "power2.out",
+          duration: 0.8
+        }, start);
+
+        // Card Exit (before next card peaks)
+        mainTimeline.to(card, {
+          opacity: 0,
+          y: -40,
+          pointerEvents: "none",
+          ease: "power2.in",
+          duration: 0.8
+        }, peak + 0.2);
+      });
+
+      // --- FASE 3: Final Layer fade-in (Frames 166-240 -> approx 68% to 100%) ---
+      // Fade in the solid light backing page to hide canvas noise and guarantee legibility
+      mainTimeline.to("#light-background", {
+        opacity: 0.96, // Near solid light-grey cover
+        ease: "power1.in",
+        duration: 1.5
+      }, 7.5);
+
+      mainTimeline.to("#final-layer", {
+        opacity: 1,
+        y: 0,
+        ease: "power2.out",
+        duration: 1.5,
+        onStart: () => {
+          const final = document.querySelector("#final-layer");
+          if (final) final.style.pointerEvents = "auto";
+        },
+        onReverseComplete: () => {
+          const final = document.querySelector("#final-layer");
+          if (final) final.style.pointerEvents = "none";
+        }
+      }, 8.0);
+    };
+
+    // Magnetic effect on WhatsApp CTA button
     const ctaBtn = document.querySelector(".magnetic-btn");
     const handleMouseMove = (e) => {
       const rect = ctaBtn.getBoundingClientRect();
       const x = e.clientX - rect.left - rect.width / 2;
       const y = e.clientY - rect.top - rect.height / 2;
       
-      gsap.to(ctaBtn, {
-        x: x * 0.4,
-        y: y * 0.4,
+      gsapRaw.to(ctaBtn, {
+        x: x * 0.35,
+        y: y * 0.35,
         duration: 0.3,
         ease: "power2.out"
       });
     };
     
     const handleMouseLeave = () => {
-      gsap.to(ctaBtn, {
+      gsapRaw.to(ctaBtn, {
         x: 0,
         y: 0,
         duration: 0.5,
@@ -220,8 +227,8 @@ export default function ScrollCanvas() {
         video.src = "";
         video.load();
       }
-      if (scrollTriggerInstance) {
-        scrollTriggerInstance.kill();
+      if (mainTimeline) {
+        mainTimeline.kill();
       }
       if (ctaBtn) {
         ctaBtn.removeEventListener("mousemove", handleMouseMove);
@@ -244,10 +251,10 @@ export default function ScrollCanvas() {
         className="fixed inset-0 glow-purple -z-10 pointer-events-none transition-opacity duration-300"
       />
       
-      {/* Light Noon Background for Fase 3 (bloom) */}
+      {/* Light Noon Background for Fase 3 (bloom) - Opaque White backing panel */}
       <div 
         id="light-background" 
-        className="fixed inset-0 bg-[#f7f7f9] opacity-0 -z-10 pointer-events-none transition-opacity duration-500"
+        className="fixed inset-0 bg-[#f7f7f9] opacity-0 -z-10 pointer-events-none"
       />
 
       {/* Loading Placeholder */}
