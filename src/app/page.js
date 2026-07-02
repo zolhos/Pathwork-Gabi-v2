@@ -12,22 +12,22 @@ export default function Home() {
       {/* ========================================================================= */}
       <section
         id="hero-layer"
-        className="fixed left-6 md:left-24 top-1/2 -translate-y-1/2 w-full max-w-[90vw] md:max-w-3xl z-10 transition-transform duration-100 ease-out select-none"
+        className="fixed left-6 md:left-24 top-[47%] -translate-y-1/2 w-full max-w-[90vw] md:max-w-3xl z-10 transition-transform duration-100 ease-out select-none"
         data-intent="informational"
       >
-        <div className="space-y-6">
-          <span className="inline-block px-4 py-1.5 rounded-full text-xs font-bold tracking-wider text-brand-green bg-brand-green/10 border border-brand-green/20 uppercase">
+        <div className="space-y-4">
+          <span className="inline-block px-3 py-1 rounded-full text-xs font-bold tracking-wider text-brand-green bg-brand-green/10 border border-brand-green/20 uppercase">
             Síntese do Método
           </span>
-          <h1 className="text-5xl md:text-7xl font-extrabold tracking-tight leading-[1.05] text-white">
+          <h1 className="text-3xl sm:text-4xl md:text-5xl lg:text-6xl font-extrabold tracking-tight leading-[1.08] text-white">
             {content.hero.title}
           </h1>
-          <p className="text-xl md:text-2xl text-gray-300 font-medium max-w-xl">
+          <p className="text-base sm:text-lg md:text-xl text-gray-300 font-medium max-w-xl">
             {content.hero.subtitle}
           </p>
-          <div className="p-6 md:p-8 rounded-xl border border-white/5 bg-white/5 backdrop-blur-sm max-w-3xl">
-            <h3 className="text-xs font-bold text-brand-purple tracking-widest uppercase mb-2">Definição Factual</h3>
-            <p className="text-base md:text-lg text-gray-200 leading-relaxed font-light">
+          <div className="p-5 md:p-6 rounded-xl border border-white/5 bg-white/5 backdrop-blur-sm max-w-2xl">
+            <h3 className="text-xs font-bold text-brand-purple tracking-widest uppercase mb-1">Definição Factual</h3>
+            <p className="text-sm sm:text-base md:text-[17px] text-gray-200 leading-relaxed font-light">
               {content.hero.directAnswer}
             </p>
           </div>
