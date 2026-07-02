@@ -130,7 +130,8 @@ export default function ScrollCanvas() {
       // 2. Set initial CSS states using 3D hardware-accelerated transforms
       gsapRaw.set("#hero-layer", { transform: "translate3d(0, -50%, 0)", opacity: 1 });
       gsapRaw.set(".fase-2-card", { transform: "translate3d(0, 30px, 0)", opacity: 0, pointerEvents: "none" });
-      gsapRaw.set("#final-layer", { transform: "translate3d(-50%, -45%, 0)", opacity: 0, pointerEvents: "none" });
+      gsapRaw.set("#final-layer", { opacity: 0, pointerEvents: "none" });
+      gsapRaw.set("#final-layer-content", { transform: "translate3d(0, 40px, 0)" });
       gsapRaw.set("#light-background", { opacity: 0 });
 
       // 3. Create a master timeline with scrub damping
@@ -175,12 +176,10 @@ export default function ScrollCanvas() {
 
       // --- FASE 2: Staggered entry/exit of micro-cards (Frames 76-165 -> approx 31% to 68%) ---
       const cards = gsapRaw.utils.toArray(".fase-2-card");
-      const cardStep = 4 / cards.length;
+      const cardStep = 5.2 / cards.length; // 0.65 spacing between entry triggers
 
       cards.forEach((card, index) => {
-        const start = 2.5 + index * cardStep;
-        const peak = start + cardStep * 0.4;
-        const end = start + cardStep;
+        const start = 2.0 + index * cardStep;
 
         // Card Entry (Uses translate3d on GPU)
         mainTimeline.to(card, {
@@ -188,17 +187,17 @@ export default function ScrollCanvas() {
           y: 0,
           pointerEvents: "auto",
           ease: "power2.out",
-          duration: 0.8
+          duration: 0.45
         }, start);
 
-        // Card Exit (before next card peaks)
+        // Card Exit (starts at 0.6s offset, gone in 0.45s)
         mainTimeline.to(card, {
           opacity: 0,
           y: -40,
           pointerEvents: "none",
           ease: "power2.in",
-          duration: 0.8
-        }, peak + 0.2);
+          duration: 0.45
+        }, start + 0.6);
       });
 
       // --- FASE 3: Final Layer fade-in (Frames 166-240 -> approx 68% to 100%) ---
@@ -211,17 +210,15 @@ export default function ScrollCanvas() {
 
       mainTimeline.to("#final-layer", {
         opacity: 1,
+        pointerEvents: "auto",
+        ease: "power2.out",
+        duration: 1.5,
+      }, 8.0);
+
+      mainTimeline.to("#final-layer-content", {
         y: 0,
         ease: "power2.out",
         duration: 1.5,
-        onStart: () => {
-          const final = document.querySelector("#final-layer");
-          if (final) final.style.pointerEvents = "auto";
-        },
-        onReverseComplete: () => {
-          const final = document.querySelector("#final-layer");
-          if (final) final.style.pointerEvents = "none";
-        }
       }, 8.0);
     };
 

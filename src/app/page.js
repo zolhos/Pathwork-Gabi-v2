@@ -19,7 +19,7 @@ export default function Home() {
           <span className="inline-block px-4 py-1.5 rounded-full text-xs font-bold tracking-wider text-brand-green bg-brand-green/10 border border-brand-green/20 uppercase">
             Síntese do Método
           </span>
-          <h1 className="text-4xl md:text-6xl font-bold tracking-tight leading-[1.1] text-white">
+          <h1 className="text-4xl md:text-6xl font-extrabold tracking-tight leading-[1.1] text-white">
             {content.hero.title}
           </h1>
           <p className="text-lg md:text-xl text-gray-400 font-medium max-w-xl">
@@ -42,136 +42,136 @@ export default function Home() {
         className="fixed inset-0 w-full h-full z-10 pointer-events-none flex items-center justify-center"
         data-intent="comparative"
       >
-        <div className="relative w-full max-w-xl px-6 flex items-center justify-center h-full">
+        <div className="relative w-full max-w-4xl px-6 flex items-center justify-center h-full">
           
           {/* Card 1: Nível Psicológico */}
-          <div className="fase-2-card opacity-0 absolute glass-card rounded-2xl p-8 space-y-4 max-w-lg transition-all duration-100 ease-out">
-            <span className="text-xs font-bold tracking-widest text-brand-purple uppercase">Nível de Integração</span>
-            <h3 className="text-2xl font-bold text-white">
+          <div className="fase-2-card opacity-0 absolute glass-card rounded-2xl p-8 md:p-10 space-y-4 w-full max-w-2xl transition-all duration-100 ease-out">
+            <span className="text-xs md:text-sm font-bold tracking-widest text-brand-purple uppercase">Nível de Integração</span>
+            <h3 className="text-3xl md:text-4xl font-extrabold text-white">
               {content.integrationLevels[0].level}
             </h3>
-            <p className="text-sm text-gray-300 leading-relaxed">
+            <p className="text-base md:text-lg text-gray-200 leading-relaxed">
               <strong>Foco:</strong> {content.integrationLevels[0].focus}
             </p>
-            <p className="text-sm text-gray-400 italic">
+            <p className="text-base md:text-lg text-gray-300 italic font-light">
               <strong>Resultado:</strong> {content.integrationLevels[0].result}
             </p>
-            <div className="flex gap-2 pt-2 border-t border-white/5">
-              <span className="text-[10px] px-2 py-0.5 rounded bg-white/5 text-gray-400 uppercase font-semibold">Pw 193</span>
-              <span className="text-[10px] px-2 py-0.5 rounded bg-white/5 text-gray-400 uppercase font-semibold">Pw 246</span>
+            <div className="flex gap-2 pt-4 border-t border-white/10">
+              <span className="text-xs px-3 py-1 rounded bg-white/5 text-gray-300 uppercase font-semibold">Pw 193</span>
+              <span className="text-xs px-3 py-1 rounded bg-white/5 text-gray-300 uppercase font-semibold">Pw 246</span>
             </div>
           </div>
 
           {/* Card 2: Nível Mental */}
-          <div className="fase-2-card opacity-0 absolute glass-card rounded-2xl p-8 space-y-4 max-w-lg transition-all duration-100 ease-out">
-            <span className="text-xs font-bold tracking-widest text-brand-purple uppercase">Nível de Integração</span>
-            <h3 className="text-2xl font-bold text-white">
+          <div className="fase-2-card opacity-0 absolute glass-card rounded-2xl p-8 md:p-10 space-y-4 w-full max-w-2xl transition-all duration-100 ease-out">
+            <span className="text-xs md:text-sm font-bold tracking-widest text-brand-purple uppercase">Nível de Integração</span>
+            <h3 className="text-3xl md:text-4xl font-extrabold text-white">
               {content.integrationLevels[1].level}
             </h3>
-            <p className="text-sm text-gray-300 leading-relaxed">
+            <p className="text-base md:text-lg text-gray-200 leading-relaxed">
               <strong>Foco:</strong> {content.integrationLevels[1].focus}
             </p>
-            <p className="text-sm text-gray-400 italic">
+            <p className="text-base md:text-lg text-gray-300 italic font-light">
               <strong>Resultado:</strong> {content.integrationLevels[1].result}
             </p>
-            <div className="flex gap-2 pt-2 border-t border-white/5">
-              <span className="text-[10px] px-2 py-0.5 rounded bg-white/5 text-gray-400 uppercase font-semibold">Pw 258</span>
+            <div className="flex gap-2 pt-4 border-t border-white/10">
+              <span className="text-xs px-3 py-1 rounded bg-white/5 text-gray-300 uppercase font-semibold">Pw 258</span>
             </div>
           </div>
 
           {/* Card 3: Nível Espiritual */}
-          <div className="fase-2-card opacity-0 absolute glass-card rounded-2xl p-8 space-y-4 max-w-lg transition-all duration-100 ease-out">
-            <span className="text-xs font-bold tracking-widest text-brand-purple uppercase">Nível de Integração</span>
-            <h3 className="text-2xl font-bold text-white">
+          <div className="fase-2-card opacity-0 absolute glass-card rounded-2xl p-8 md:p-10 space-y-4 w-full max-w-2xl transition-all duration-100 ease-out">
+            <span className="text-xs md:text-sm font-bold tracking-widest text-brand-purple uppercase">Nível de Integração</span>
+            <h3 className="text-3xl md:text-4xl font-extrabold text-white">
               {content.integrationLevels[2].level}
             </h3>
-            <p className="text-sm text-gray-300 leading-relaxed">
+            <p className="text-base md:text-lg text-gray-200 leading-relaxed">
               <strong>Foco:</strong> {content.integrationLevels[2].focus}
             </p>
-            <p className="text-sm text-gray-400 italic">
+            <p className="text-base md:text-lg text-gray-300 italic font-light">
               <strong>Resultado:</strong> {content.integrationLevels[2].result}
             </p>
-            <div className="flex gap-2 pt-2 border-t border-white/5">
-              <span className="text-[10px] px-2 py-0.5 rounded bg-white/5 text-gray-400 uppercase font-semibold">Eva Pierrakos</span>
-              <span className="text-[10px] px-2 py-0.5 rounded bg-white/5 text-gray-400 uppercase font-semibold">Pw 193</span>
+            <div className="flex gap-2 pt-4 border-t border-white/10">
+              <span className="text-xs px-3 py-1 rounded bg-white/5 text-gray-300 uppercase font-semibold">Eva Pierrakos</span>
+              <span className="text-xs px-3 py-1 rounded bg-white/5 text-gray-300 uppercase font-semibold">Pw 193</span>
             </div>
           </div>
 
           {/* Card 4: Sintoma - Cansaço */}
-          <div className="fase-2-card opacity-0 absolute glass-card rounded-2xl p-8 space-y-4 max-w-lg transition-all duration-100 ease-out">
-            <span className="text-xs font-bold tracking-widest text-brand-green uppercase">Dores Comuns</span>
-            <h3 className="text-2xl font-bold text-white">{content.symptoms[0].title}</h3>
-            <p className="text-sm text-red-300 leading-relaxed">
+          <div className="fase-2-card opacity-0 absolute glass-card rounded-2xl p-8 md:p-10 space-y-4 w-full max-w-2xl transition-all duration-100 ease-out">
+            <span className="text-xs md:text-sm font-bold tracking-widest text-brand-green uppercase">Dores Comuns</span>
+            <h3 className="text-3xl md:text-4xl font-extrabold text-white">{content.symptoms[0].title}</h3>
+            <p className="text-base md:text-lg text-red-200 leading-relaxed">
               <strong>Causa:</strong> {content.symptoms[0].cause}
             </p>
-            <p className="text-sm text-brand-green font-light">
+            <p className="text-base md:text-lg text-brand-green font-light">
               <strong>Resolução:</strong> {content.symptoms[0].solution}
             </p>
-            <div className="flex gap-2 pt-2 border-t border-white/5">
-              <span className="text-[10px] px-2 py-0.5 rounded bg-white/5 text-gray-400 uppercase font-semibold">Pw 109</span>
+            <div className="flex gap-2 pt-4 border-t border-white/10">
+              <span className="text-xs px-3 py-1 rounded bg-white/5 text-gray-300 uppercase font-semibold">Pw 109</span>
             </div>
           </div>
 
           {/* Card 5: Sintoma - Entorpecimento */}
-          <div className="fase-2-card opacity-0 absolute glass-card rounded-2xl p-8 space-y-4 max-w-lg transition-all duration-100 ease-out">
-            <span className="text-xs font-bold tracking-widest text-brand-green uppercase">Dores Comuns</span>
-            <h3 className="text-2xl font-bold text-white">{content.symptoms[1].title}</h3>
-            <p className="text-sm text-red-300 leading-relaxed">
+          <div className="fase-2-card opacity-0 absolute glass-card rounded-2xl p-8 md:p-10 space-y-4 w-full max-w-2xl transition-all duration-100 ease-out">
+            <span className="text-xs md:text-sm font-bold tracking-widest text-brand-green uppercase">Dores Comuns</span>
+            <h3 className="text-3xl md:text-4xl font-extrabold text-white">{content.symptoms[1].title}</h3>
+            <p className="text-base md:text-lg text-red-200 leading-relaxed">
               <strong>Causa:</strong> {content.symptoms[1].cause}
             </p>
-            <p className="text-sm text-brand-green font-light">
+            <p className="text-base md:text-lg text-brand-green font-light">
               <strong>Resolução:</strong> {content.symptoms[1].solution}
             </p>
-            <div className="flex gap-2 pt-2 border-t border-white/5">
-              <span className="text-[10px] px-2 py-0.5 rounded bg-white/5 text-gray-400 uppercase font-semibold">Pw 070</span>
-              <span className="text-[10px] px-2 py-0.5 rounded bg-white/5 text-gray-400 uppercase font-semibold">Pw 196</span>
+            <div className="flex gap-2 pt-4 border-t border-white/10">
+              <span className="text-xs px-3 py-1 rounded bg-white/5 text-gray-300 uppercase font-semibold">Pw 070</span>
+              <span className="text-xs px-3 py-1 rounded bg-white/5 text-gray-300 uppercase font-semibold">Pw 196</span>
             </div>
           </div>
 
           {/* Card 6: Sintoma - Medos */}
-          <div className="fase-2-card opacity-0 absolute glass-card rounded-2xl p-8 space-y-4 max-w-lg transition-all duration-100 ease-out">
-            <span className="text-xs font-bold tracking-widest text-brand-green uppercase">Dores Comuns</span>
-            <h3 className="text-2xl font-bold text-white">{content.symptoms[2].title}</h3>
-            <p className="text-sm text-red-300 leading-relaxed">
+          <div className="fase-2-card opacity-0 absolute glass-card rounded-2xl p-8 md:p-10 space-y-4 w-full max-w-2xl transition-all duration-100 ease-out">
+            <span className="text-xs md:text-sm font-bold tracking-widest text-brand-green uppercase">Dores Comuns</span>
+            <h3 className="text-3xl md:text-4xl font-extrabold text-white">{content.symptoms[2].title}</h3>
+            <p className="text-base md:text-lg text-red-200 leading-relaxed">
               <strong>Causa:</strong> {content.symptoms[2].cause}
             </p>
-            <p className="text-sm text-brand-green font-light">
+            <p className="text-base md:text-lg text-brand-green font-light">
               <strong>Resolução:</strong> {content.symptoms[2].solution}
             </p>
-            <div className="flex gap-2 pt-2 border-t border-white/5">
-              <span className="text-[10px] px-2 py-0.5 rounded bg-white/5 text-gray-400 uppercase font-semibold">Pw 057</span>
+            <div className="flex gap-2 pt-4 border-t border-white/10">
+              <span className="text-xs px-3 py-1 rounded bg-white/5 text-gray-300 uppercase font-semibold">Pw 057</span>
             </div>
           </div>
 
           {/* Card 7: Sintoma - Culpa */}
-          <div className="fase-2-card opacity-0 absolute glass-card rounded-2xl p-8 space-y-4 max-w-lg transition-all duration-100 ease-out">
-            <span className="text-xs font-bold tracking-widest text-brand-green uppercase">Dores Comuns</span>
-            <h3 className="text-2xl font-bold text-white">{content.symptoms[3].title}</h3>
-            <p className="text-sm text-red-300 leading-relaxed">
+          <div className="fase-2-card opacity-0 absolute glass-card rounded-2xl p-8 md:p-10 space-y-4 w-full max-w-2xl transition-all duration-100 ease-out">
+            <span className="text-xs md:text-sm font-bold tracking-widest text-brand-green uppercase">Dores Comuns</span>
+            <h3 className="text-3xl md:text-4xl font-extrabold text-white">{content.symptoms[3].title}</h3>
+            <p className="text-base md:text-lg text-red-200 leading-relaxed">
               <strong>Causa:</strong> {content.symptoms[3].cause}
             </p>
-            <p className="text-sm text-brand-green font-light">
+            <p className="text-base md:text-lg text-brand-green font-light">
               <strong>Resolução:</strong> {content.symptoms[3].solution}
             </p>
-            <div className="flex gap-2 pt-2 border-t border-white/5">
-              <span className="text-[10px] px-2 py-0.5 rounded bg-white/5 text-gray-400 uppercase font-semibold">Pw 004</span>
-              <span className="text-[10px] px-2 py-0.5 rounded bg-white/5 text-gray-400 uppercase font-semibold">Pw 089</span>
+            <div className="flex gap-2 pt-4 border-t border-white/10">
+              <span className="text-xs px-3 py-1 rounded bg-white/5 text-gray-300 uppercase font-semibold">Pw 004</span>
+              <span className="text-xs px-3 py-1 rounded bg-white/5 text-gray-300 uppercase font-semibold">Pw 089</span>
             </div>
           </div>
 
           {/* Card 8: Sintoma - Vitimismo */}
-          <div className="fase-2-card opacity-0 absolute glass-card rounded-2xl p-8 space-y-4 max-w-lg transition-all duration-100 ease-out">
-            <span className="text-xs font-bold tracking-widest text-brand-green uppercase">Dores Comuns</span>
-            <h3 className="text-2xl font-bold text-white">{content.symptoms[4].title}</h3>
-            <p className="text-sm text-red-300 leading-relaxed">
+          <div className="fase-2-card opacity-0 absolute glass-card rounded-2xl p-8 md:p-10 space-y-4 w-full max-w-2xl transition-all duration-100 ease-out">
+            <span className="text-xs md:text-sm font-bold tracking-widest text-brand-green uppercase">Dores Comuns</span>
+            <h3 className="text-3xl md:text-4xl font-extrabold text-white">{content.symptoms[4].title}</h3>
+            <p className="text-base md:text-lg text-red-200 leading-relaxed">
               <strong>Causa:</strong> {content.symptoms[4].cause}
             </p>
-            <p className="text-sm text-brand-green font-light">
+            <p className="text-base md:text-lg text-brand-green font-light">
               <strong>Resolução:</strong> {content.symptoms[4].solution}
             </p>
-            <div className="flex gap-2 pt-2 border-t border-white/5">
-              <span className="text-[10px] px-2 py-0.5 rounded bg-white/5 text-gray-400 uppercase font-semibold">Pw 193</span>
-              <span className="text-[10px] px-2 py-0.5 rounded bg-white/5 text-gray-400 uppercase font-semibold">Pw 246</span>
+            <div className="flex gap-2 pt-4 border-t border-white/10">
+              <span className="text-xs px-3 py-1 rounded bg-white/5 text-gray-300 uppercase font-semibold">Pw 193</span>
+              <span className="text-xs px-3 py-1 rounded bg-white/5 text-gray-300 uppercase font-semibold">Pw 246</span>
             </div>
           </div>
 
@@ -183,11 +183,14 @@ export default function Home() {
       {/* ========================================================================= */}
       <section
         id="final-layer"
-        className="fixed left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 w-full max-w-5xl px-6 z-10 opacity-0 pointer-events-none transition-all duration-300 overflow-y-auto max-h-[85vh] pr-4 select-none"
-        style={{ color: "#0b0b0c" }}
+        className="fixed inset-0 w-full h-full z-10 opacity-0 pointer-events-none flex items-center justify-center px-6 transition-opacity duration-300"
         data-intent="faq"
       >
-        <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 items-start pb-8">
+        <div 
+          id="final-layer-content"
+          className="w-full max-w-5xl bg-white/95 backdrop-blur-md rounded-2xl shadow-2xl p-8 md:p-12 border border-black/10 overflow-y-auto max-h-[85vh] no-scrollbar grid grid-cols-1 lg:grid-cols-12 gap-8 items-start select-none"
+          style={{ color: "#0b0b0c" }}
+        >
           
           {/* Left Column: CTA & Regions */}
           <div className="lg:col-span-5 space-y-6">
@@ -220,7 +223,7 @@ export default function Home() {
                 href={content.contact.whatsappUrl}
                 target="_blank"
                 rel="noopener noreferrer"
-                className="magnetic-btn inline-block px-8 py-3.5 rounded-lg bg-brand-green text-white font-bold text-sm tracking-wide shadow-[0_4px_14px_rgba(0,168,107,0.3)] hover:bg-[#00965e] transition-colors"
+                className="magnetic-btn inline-block px-8 py-3.5 rounded-lg bg-brand-green text-white font-bold text-sm tracking-wide shadow-[0_4px_14px_rgba(0,168,107,0.3)] hover:bg-[#00965e] transition-colors animate-pulse"
               >
                 FALE VIA WHATSAPP
               </a>
@@ -268,7 +271,6 @@ export default function Home() {
 
         </div>
       </section>
-
     </main>
   );
 }
