@@ -8,7 +8,8 @@ import Lenis from "lenis";
 export default function ScrollCanvas() {
   const canvasRef = useRef(null);
   const [videoLoaded, setVideoLoaded] = useState(false);
-  const videoRef = useRef(null);
+  const [loadProgress, setLoadProgress] = useState(0);
+  const imagesRef = useRef([]);
 
   useEffect(() => {
     // Register ScrollTrigger plugin
@@ -39,60 +40,94 @@ export default function ScrollCanvas() {
 
     const canvas = canvasRef.current;
     const ctx = canvas.getContext("2d");
-    
-    // Create hidden video element
-    const video = document.createElement("video");
-    video.src = "/Pathwork-Gabi-v2/Lotus_seed_to_bloom_time-lapse_202607020015.mp4";
-    video.preload = "auto";
-    video.playsInline = true;
-    video.muted = true;
-    video.loop = false;
-    videoRef.current = video;
+    const totalFrames = 240;
+    let loadedCount = 0;
 
-    const resizeCanvas = () => {
-      canvas.width = window.innerWidth;
-      canvas.height = window.innerHeight;
-      drawFrame();
-    };
-
-    const drawFrame = () => {
-      if (video.readyState >= 2) {
-        const videoRatio = video.videoWidth / video.videoHeight;
+    // Helper to draw a specific frame image to the canvas
+    const drawFrame = (frameIndex) => {
+      const img = imagesRef.current[frameIndex];
+      if (img && img.complete && canvas) {
+        const imgRatio = img.width / img.height;
         const canvasRatio = canvas.width / canvas.height;
         let drawWidth, drawHeight, xOffset, yOffset;
 
-        if (canvasRatio > videoRatio) {
+        if (canvasRatio > imgRatio) {
           drawWidth = canvas.width;
-          drawHeight = canvas.width / videoRatio;
+          drawHeight = canvas.width / imgRatio;
           xOffset = 0;
           yOffset = (canvas.height - drawHeight) / 2;
         } else {
-          drawWidth = canvas.height * videoRatio;
+          drawWidth = canvas.height * imgRatio;
           drawHeight = canvas.height;
           xOffset = (canvas.width - drawWidth) / 2;
           yOffset = 0;
         }
 
-        ctx.drawImage(video, xOffset, yOffset, drawWidth, drawHeight);
+        ctx.clearRect(0, 0, canvas.width, canvas.height);
+        ctx.drawImage(img, xOffset, yOffset, drawWidth, drawHeight);
       }
     };
 
-    video.addEventListener("loadedmetadata", () => {
-      setVideoLoaded(true);
-      resizeCanvas();
-      window.addEventListener("resize", resizeCanvas);
-      initAnimationTimeline();
-    });
+    // Preload image sequence to RAM before starting
+    const preloadImages = () => {
+      const tempImages = [];
+      for (let i = 0; i < totalFrames; i++) {
+        const img = new Image();
+        const frameNum = String(i).padStart(3, "0");
+        img.src = `/Pathwork-Gabi-v2/assets/lotus-frames/frame_${frameNum}.webp`;
+        
+        img.onload = () => {
+          loadedCount++;
+          const progress = Math.round((loadedCount / totalFrames) * 100);
+          setLoadProgress(progress);
 
-    video.addEventListener("seeked", drawFrame);
+          if (loadedCount === totalFrames) {
+            setVideoLoaded(true);
+            resizeCanvas();
+            initAnimationTimeline();
+          }
+        };
+
+        img.onerror = () => {
+          // If a frame fails to load, count it anyway to prevent app lock
+          loadedCount++;
+          if (loadedCount === totalFrames) {
+            setVideoLoaded(true);
+            resizeCanvas();
+            initAnimationTimeline();
+          }
+        };
+
+        tempImages.push(img);
+      }
+      imagesRef.current = tempImages;
+    };
+
+    const resizeCanvas = () => {
+      if (canvas) {
+        canvas.width = window.innerWidth;
+        canvas.height = window.innerHeight;
+        // Re-draw current frame index based on scroll position
+        const scrollTrigger = ScrollTrigger.getById("master-scroll");
+        if (scrollTrigger) {
+          const currentFrame = Math.min(Math.floor(scrollTrigger.progress * (totalFrames - 1)), totalFrames - 1);
+          drawFrame(currentFrame);
+        } else {
+          drawFrame(0);
+        }
+      }
+    };
+
+    window.addEventListener("resize", resizeCanvas);
+    preloadImages();
 
     let mainTimeline = null;
 
     const initAnimationTimeline = () => {
-      // 1. Create a proxy object to smooth out the video currentTime changes via GSAP scrub
-      const videoProxy = { currentTime: 0 };
+      // 1. Create a proxy object to smooth out the frame index transitions via GSAP scrub
+      const frameProxy = { frame: 0 };
 
-      // 2. Set initial CSS states for performance (will use transform3d)
+      // 2. Set initial CSS states using 3D hardware-accelerated transforms
       gsapRaw.set("#hero-layer", { transform: "translate3d(0, -50%, 0)", opacity: 1 });
       gsapRaw.set(".fase-2-card", { transform: "translate3d(0, 30px, 0)", opacity: 0, pointerEvents: "none" });
       gsapRaw.set("#final-layer", { transform: "translate3d(-50%, -45%, 0)", opacity: 0, pointerEvents: "none" });
@@ -100,6 +135,7 @@ export default function ScrollCanvas() {
 
       // 3. Create a master timeline with scrub damping
       mainTimeline = gsapRaw.timeline({
+        id: "master-scroll",
         scrollTrigger: {
           trigger: "#scroll-wrapper",
           start: "top top",
@@ -108,15 +144,14 @@ export default function ScrollCanvas() {
         }
       });
 
-      // Animate video playback via proxy
-      mainTimeline.to(videoProxy, {
-        currentTime: video.duration || 8,
+      // Animate frame drawing via proxy
+      mainTimeline.to(frameProxy, {
+        frame: totalFrames - 1,
         ease: "none",
         duration: 10, // Virtual relative timeline length
         onUpdate: () => {
-          if (video.duration) {
-            video.currentTime = videoProxy.currentTime;
-          }
+          const frameIndex = Math.min(Math.floor(frameProxy.frame), totalFrames - 1);
+          drawFrame(frameIndex);
         }
       }, 0);
 
@@ -140,14 +175,14 @@ export default function ScrollCanvas() {
 
       // --- FASE 2: Staggered entry/exit of micro-cards (Frames 76-165 -> approx 31% to 68%) ---
       const cards = gsapRaw.utils.toArray(".fase-2-card");
-      const cardStep = 4 / cards.length; // virtual time mapping
+      const cardStep = 4 / cards.length;
 
       cards.forEach((card, index) => {
         const start = 2.5 + index * cardStep;
         const peak = start + cardStep * 0.4;
         const end = start + cardStep;
 
-        // Card Entry
+        // Card Entry (Uses translate3d on GPU)
         mainTimeline.to(card, {
           opacity: 1,
           y: 0,
@@ -222,11 +257,6 @@ export default function ScrollCanvas() {
     return () => {
       lenis.destroy();
       window.removeEventListener("resize", resizeCanvas);
-      if (video) {
-        video.removeEventListener("seeked", drawFrame);
-        video.src = "";
-        video.load();
-      }
       if (mainTimeline) {
         mainTimeline.kill();
       }
@@ -234,6 +264,8 @@ export default function ScrollCanvas() {
         ctaBtn.removeEventListener("mousemove", handleMouseMove);
         ctaBtn.removeEventListener("mouseleave", handleMouseLeave);
       }
+      // Clear image cache on unmount
+      imagesRef.current = [];
     };
   }, []);
 
@@ -257,12 +289,14 @@ export default function ScrollCanvas() {
         className="fixed inset-0 bg-[#f7f7f9] opacity-0 -z-10 pointer-events-none"
       />
 
-      {/* Loading Placeholder */}
+      {/* Loading Placeholder with progress counter */}
       {!videoLoaded && (
         <div className="fixed inset-0 bg-[#0a0a0a] z-50 flex items-center justify-center">
           <div className="flex flex-col items-center gap-4">
             <div className="w-12 h-12 rounded-full border-4 border-brand-purple border-t-transparent animate-spin" />
-            <p className="text-sm font-semibold tracking-wider text-gray-400">CARREGANDO JORNADA...</p>
+            <p className="text-sm font-semibold tracking-wider text-gray-400 uppercase">
+              CARREGANDO JORNADA ({loadProgress}%)
+            </p>
           </div>
         </div>
       )}
