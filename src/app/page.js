@@ -12,7 +12,7 @@ export default function Home() {
       {/* ========================================================================= */}
       <section
         id="hero-layer"
-        className="fixed left-6 md:left-24 top-[47%] -translate-y-1/2 w-full max-w-[90vw] md:max-w-3xl z-10 transition-transform duration-100 ease-out select-none"
+        className="fixed left-6 md:left-24 top-[14%] sm:top-[16%] md:top-[18%] w-full max-w-[90vw] md:max-w-3xl z-10 transition-transform duration-100 ease-out select-none"
         data-intent="informational"
       >
         <div className="space-y-4">

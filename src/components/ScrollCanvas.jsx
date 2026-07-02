@@ -128,7 +128,7 @@ export default function ScrollCanvas() {
       const frameProxy = { frame: 0 };
 
       // Set initial CSS states using 3D hardware-accelerated transforms
-      gsapRaw.set("#hero-layer", { transform: "translate3d(0, -50%, 0)", opacity: 1 });
+      gsapRaw.set("#hero-layer", { transform: "translate3d(0, 0, 0)", opacity: 1 });
       gsapRaw.set(".fase-2-card", { transform: "translate3d(0, 30px, 0)", opacity: 0, pointerEvents: "none" });
       gsapRaw.set("#final-layer", { opacity: 0, pointerEvents: "none" });
       gsapRaw.set("#final-layer-content", { transform: "translate3d(0, 40px, 0)" });
