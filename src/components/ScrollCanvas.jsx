@@ -44,7 +44,7 @@ export default function ScrollCanvas() {
     let loadedCount = 0;
 
     // Timeline snap progress points (Hero, Card 1-8 peaks, and Final section)
-    const snapPoints = [0, 0.23, 0.295, 0.36, 0.425, 0.49, 0.555, 0.62, 0.685, 1.0];
+    const snapPoints = [0, 0.145, 0.236, 0.327, 0.418, 0.509, 0.60, 0.69, 0.781, 1.0];
 
     // Helper to draw a specific frame image to the canvas
     const drawFrame = (frameIndex) => {
@@ -127,18 +127,12 @@ export default function ScrollCanvas() {
     const initAnimationTimeline = () => {
       const frameProxy = { frame: 0 };
 
-      // Set initial CSS states using 3D hardware-accelerated transforms for Stacking Cascade
+      // Set initial CSS states using 3D hardware-accelerated transforms (All cards initially hidden)
       gsapRaw.set("#hero-layer", { transform: "translate3d(0, 0, 0)", opacity: 1 });
       
       const cards = gsapRaw.utils.toArray(".fase-2-card");
-      cards.forEach((card, index) => {
-        if (index === 0) {
-          gsapRaw.set(card, { transform: "translate3d(0, 0, 0)", scale: 1, opacity: 1, zIndex: 10, pointerEvents: "auto" });
-        } else if (index === 1) {
-          gsapRaw.set(card, { transform: "translate3d(0, 110px, 0)", scale: 0.92, opacity: 0.4, zIndex: 5, pointerEvents: "none" });
-        } else {
-          gsapRaw.set(card, { transform: "translate3d(0, 220px, 0)", scale: 0.84, opacity: 0, zIndex: 1, pointerEvents: "none" });
-        }
+      cards.forEach((card) => {
+        gsapRaw.set(card, { transform: "translate3d(0, 40px, 0)", scale: 0.95, opacity: 0, zIndex: 1, pointerEvents: "none" });
       });
 
       gsapRaw.set("#final-layer", { opacity: 0, pointerEvents: "none" });
@@ -165,7 +159,7 @@ export default function ScrollCanvas() {
             // Toggle visibility of the floating assist navigation panel
             const nav = document.getElementById("floating-nav");
             if (nav) {
-              if (progress >= 0.18 && progress <= 0.74) {
+              if (progress >= 0.10 && progress <= 0.85) {
                 nav.style.opacity = "1";
                 nav.style.pointerEvents = "auto";
               } else {
@@ -174,11 +168,18 @@ export default function ScrollCanvas() {
               }
             }
 
-            // Update numerical indicator values based on scroll progression
-            const cardIndex = Math.min(
-              Math.max(Math.floor((progress - 0.18) / 0.065), 0),
-              7
-            );
+            // Update numerical indicator values based on scroll progression (closes peak snap point)
+            const cardProgressPoints = [0.145, 0.236, 0.327, 0.418, 0.509, 0.60, 0.69, 0.781];
+            let cardIndex = 0;
+            let minDiff = 999;
+            cardProgressPoints.forEach((p, idx) => {
+              const diff = Math.abs(progress - p);
+              if (diff < minDiff) {
+                minDiff = diff;
+                cardIndex = idx;
+              }
+            });
+
             const indicator = document.getElementById("nav-indicator");
             if (indicator) {
               indicator.textContent = `${String(cardIndex + 1).padStart(2, "0")} / 08`;
@@ -187,29 +188,29 @@ export default function ScrollCanvas() {
             // Disable buttons dynamically if at first or last cards
             const prevButton = document.getElementById("nav-prev-btn");
             const nextButton = document.getElementById("nav-next-btn");
-            if (prevButton) prevButton.disabled = progress < 0.21;
-            if (nextButton) nextButton.disabled = progress > 0.69;
+            if (prevButton) prevButton.disabled = progress < 0.12;
+            if (nextButton) nextButton.disabled = progress > 0.80;
           }
         }
       });
 
-      // Animate frame drawing via proxy
+      // Animate frame drawing via proxy over a virtual timeline of length 22
       mainTimeline.to(frameProxy, {
         frame: totalFrames - 1,
         ease: "none",
-        duration: 10,
+        duration: 22,
         onUpdate: () => {
           const frameIndex = Math.min(Math.floor(frameProxy.frame), totalFrames - 1);
           drawFrame(frameIndex);
         }
       }, 0);
 
-      // --- FASE 1: Hero Fade out (Frames 0-75) ---
+      // --- FASE 1: Hero Fade out (duration: 2.2 units) ---
       mainTimeline.to("#hero-layer", {
         opacity: 0,
         x: -50,
         ease: "power1.inOut",
-        duration: 3,
+        duration: 2.2,
         onUpdate: function() {
           const hero = document.querySelector("#hero-layer");
           if (hero) hero.style.pointerEvents = this.progress() > 0.8 ? "none" : "auto";
@@ -219,70 +220,55 @@ export default function ScrollCanvas() {
       mainTimeline.to("#indigo-glow", {
         opacity: 0,
         ease: "none",
-        duration: 3
+        duration: 2.2
       }, 0);
 
-      // --- FASE 2: Staggered entry/exit of micro-cards (Frames 76-165) ---
-      const cardStep = 5.2 / cards.length;
-
+      // --- FASE 2: Staggered entry/exit of cards (with 0.6 units blank gap between) ---
       cards.forEach((card, index) => {
-        const start = 2.0 + index * cardStep;
+        const start = 2.5 + index * 2.0;
 
-        // 1. Hidden to Peeking (transitions in during the step before start)
-        if (index > 0) {
-          mainTimeline.to(card, {
-            opacity: 0.4,
-            y: 110,
-            scale: 0.92,
-            zIndex: 5,
-            pointerEvents: "none",
-            ease: "none",
-            duration: 0.65
-          }, start - 0.65);
-        }
-
-        // 2. Peeking to Active (fully active at start)
+        // Card Entry (from t = start to start + 0.4)
         mainTimeline.to(card, {
           opacity: 1,
           y: 0,
           scale: 1,
           zIndex: 10,
           pointerEvents: "auto",
-          ease: "none",
-          duration: 0.65
+          ease: "power2.out",
+          duration: 0.4
         }, start);
 
-        // 3. Active to Exited (fully exited at start + 0.65)
+        // Card Exit (from t = start + 1.0 to start + 1.4)
         mainTimeline.to(card, {
           opacity: 0,
-          y: -110,
-          scale: 0.92,
+          y: -40,
+          scale: 0.95,
           zIndex: 1,
           pointerEvents: "none",
-          ease: "none",
-          duration: 0.65
-        }, start + 0.65);
+          ease: "power2.in",
+          duration: 0.4
+        }, start + 1.0);
       });
 
-      // --- FASE 3: Final Layer fade-in (Frames 166-240) ---
+      // --- FASE 3: Final Layer fade-in ---
       mainTimeline.to("#light-background", {
         opacity: 0.96,
         ease: "power1.in",
         duration: 1.5
-      }, 7.5);
+      }, 18.5);
 
       mainTimeline.to("#final-layer", {
         opacity: 1,
         pointerEvents: "auto",
         ease: "power2.out",
         duration: 1.5,
-      }, 8.0);
+      }, 19.0);
 
       mainTimeline.to("#final-layer-content", {
         y: 0,
         ease: "power2.out",
         duration: 1.5,
-      }, 8.0);
+      }, 19.0);
     };
 
     // Attach click listeners to next/prev assist buttons
