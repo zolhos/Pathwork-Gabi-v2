@@ -1,0 +1,92 @@
+@import "tailwindcss";
+
+:root {
+  --background: #0a0a0a;
+  --foreground: #ffffff;
+}
+
+@theme {
+  --color-brand-purple: #8a2be2;
+  --color-brand-green: #00a86b;
+  --color-dark-bg: #0a0a0a;
+}
+
+/* Custom Lenis Smooth Scroll Styles */
+html.lenis,
+html.lenis body {
+  height: auto;
+}
+
+.lenis.lenis-smooth {
+  scroll-behavior: auto !important;
+}
+
+.lenis.lenis-smooth [data-lenis-prevent] {
+  overflow-anchor: contain;
+}
+
+.lenis.lenis-stopped {
+  overflow: hidden;
+}
+
+.lenis.lenis-scrolling iframe {
+  pointer-events: none;
+}
+
+/* Glow Gradients and Theme Utilities */
+.glow-purple {
+  background: radial-gradient(circle, rgba(138, 43, 226, 0.18) 0%, rgba(10, 10, 10, 0) 70%);
+}
+
+.glow-green {
+  background: radial-gradient(circle, rgba(0, 168, 107, 0.18) 0%, rgba(10, 10, 10, 0) 70%);
+}
+
+.hero-bg {
+  background: radial-gradient(at top left, rgba(138, 43, 226, 0.15), transparent 50%),
+              radial-gradient(at top right, rgba(0, 168, 107, 0.15), transparent 50%);
+}
+
+.glass-card {
+  background: rgba(255, 255, 255, 0.03);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  border: 1px solid rgba(255, 255, 255, 0.08);
+}
+
+.timeline-line {
+  width: 2px;
+  background: linear-gradient(to bottom, #8a2be2, #00a86b);
+}
+
+/* Accordion Native details/summary styles */
+details.faq-item summary::-webkit-details-marker {
+  display: none;
+}
+
+details.faq-item {
+  transition: all 0.3s ease;
+}
+
+details.faq-item[open] {
+  background: rgba(255, 255, 255, 0.05);
+}
+
+.faq-answer-container {
+  max-height: 0;
+  overflow: hidden;
+  transition: max-height 0.3s ease-out, padding 0.3s ease;
+}
+
+details.faq-item[open] .faq-answer-container {
+  max-height: 500px;
+}
+
+/* Hide scrollbars but preserve functionality */
+.no-scrollbar::-webkit-scrollbar {
+  display: none;
+}
+.no-scrollbar {
+  -ms-overflow-style: none;
+  scrollbar-width: none;
+}
