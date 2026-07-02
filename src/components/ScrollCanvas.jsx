@@ -127,9 +127,20 @@ export default function ScrollCanvas() {
     const initAnimationTimeline = () => {
       const frameProxy = { frame: 0 };
 
-      // Set initial CSS states using 3D hardware-accelerated transforms
+      // Set initial CSS states using 3D hardware-accelerated transforms for Stacking Cascade
       gsapRaw.set("#hero-layer", { transform: "translate3d(0, 0, 0)", opacity: 1 });
-      gsapRaw.set(".fase-2-card", { transform: "translate3d(0, 30px, 0)", opacity: 0, pointerEvents: "none" });
+      
+      const cards = gsapRaw.utils.toArray(".fase-2-card");
+      cards.forEach((card, index) => {
+        if (index === 0) {
+          gsapRaw.set(card, { transform: "translate3d(0, 0, 0)", scale: 1, opacity: 1, zIndex: 10, pointerEvents: "auto" });
+        } else if (index === 1) {
+          gsapRaw.set(card, { transform: "translate3d(0, 110px, 0)", scale: 0.92, opacity: 0.4, zIndex: 5, pointerEvents: "none" });
+        } else {
+          gsapRaw.set(card, { transform: "translate3d(0, 220px, 0)", scale: 0.84, opacity: 0, zIndex: 1, pointerEvents: "none" });
+        }
+      });
+
       gsapRaw.set("#final-layer", { opacity: 0, pointerEvents: "none" });
       gsapRaw.set("#final-layer-content", { transform: "translate3d(0, 40px, 0)" });
       gsapRaw.set("#light-background", { opacity: 0 });
@@ -212,29 +223,45 @@ export default function ScrollCanvas() {
       }, 0);
 
       // --- FASE 2: Staggered entry/exit of micro-cards (Frames 76-165) ---
-      const cards = gsapRaw.utils.toArray(".fase-2-card");
       const cardStep = 5.2 / cards.length;
 
       cards.forEach((card, index) => {
         const start = 2.0 + index * cardStep;
 
-        // Card Entry
+        // 1. Hidden to Peeking (transitions in during the step before start)
+        if (index > 0) {
+          mainTimeline.to(card, {
+            opacity: 0.4,
+            y: 110,
+            scale: 0.92,
+            zIndex: 5,
+            pointerEvents: "none",
+            ease: "none",
+            duration: 0.65
+          }, start - 0.65);
+        }
+
+        // 2. Peeking to Active (fully active at start)
         mainTimeline.to(card, {
           opacity: 1,
           y: 0,
+          scale: 1,
+          zIndex: 10,
           pointerEvents: "auto",
-          ease: "power2.out",
-          duration: 0.45
+          ease: "none",
+          duration: 0.65
         }, start);
 
-        // Card Exit
+        // 3. Active to Exited (fully exited at start + 0.65)
         mainTimeline.to(card, {
           opacity: 0,
-          y: -40,
+          y: -110,
+          scale: 0.92,
+          zIndex: 1,
           pointerEvents: "none",
-          ease: "power2.in",
-          duration: 0.45
-        }, start + 0.6);
+          ease: "none",
+          duration: 0.65
+        }, start + 0.65);
       });
 
       // --- FASE 3: Final Layer fade-in (Frames 166-240) ---

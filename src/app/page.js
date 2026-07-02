@@ -45,7 +45,7 @@ export default function Home() {
         <div className="relative w-full max-w-5xl px-6 flex items-center justify-center h-full">
           
           {/* Card 1: Nível Psicológico */}
-          <div className="fase-2-card opacity-0 absolute glass-card rounded-2xl p-8 md:p-12 space-y-5 w-full max-w-3xl transition-all duration-100 ease-out">
+          <div className="fase-2-card opacity-0 absolute glass-card rounded-2xl p-8 md:p-12 space-y-5 w-full max-w-3xl">
             <span className="text-xs md:text-sm font-bold tracking-widest text-brand-purple uppercase">Nível de Integração</span>
             <h3 className="text-4xl md:text-5xl font-extrabold text-white">
               {content.integrationLevels[0].level}
@@ -63,7 +63,7 @@ export default function Home() {
           </div>
 
           {/* Card 2: Nível Mental */}
-          <div className="fase-2-card opacity-0 absolute glass-card rounded-2xl p-8 md:p-12 space-y-5 w-full max-w-3xl transition-all duration-100 ease-out">
+          <div className="fase-2-card opacity-0 absolute glass-card rounded-2xl p-8 md:p-12 space-y-5 w-full max-w-3xl">
             <span className="text-xs md:text-sm font-bold tracking-widest text-brand-purple uppercase">Nível de Integração</span>
             <h3 className="text-4xl md:text-5xl font-extrabold text-white">
               {content.integrationLevels[1].level}
@@ -80,7 +80,7 @@ export default function Home() {
           </div>
 
           {/* Card 3: Nível Espiritual */}
-          <div className="fase-2-card opacity-0 absolute glass-card rounded-2xl p-8 md:p-12 space-y-5 w-full max-w-3xl transition-all duration-100 ease-out">
+          <div className="fase-2-card opacity-0 absolute glass-card rounded-2xl p-8 md:p-12 space-y-5 w-full max-w-3xl">
             <span className="text-xs md:text-sm font-bold tracking-widest text-brand-purple uppercase">Nível de Integração</span>
             <h3 className="text-4xl md:text-5xl font-extrabold text-white">
               {content.integrationLevels[2].level}
@@ -98,7 +98,7 @@ export default function Home() {
           </div>
 
           {/* Card 4: Sintoma - Cansaço */}
-          <div className="fase-2-card opacity-0 absolute glass-card rounded-2xl p-8 md:p-12 space-y-5 w-full max-w-3xl transition-all duration-100 ease-out">
+          <div className="fase-2-card opacity-0 absolute glass-card rounded-2xl p-8 md:p-12 space-y-5 w-full max-w-3xl">
             <span className="text-xs md:text-sm font-bold tracking-widest text-brand-green uppercase">Dores Comuns</span>
             <h3 className="text-4xl md:text-5xl font-extrabold text-white">{content.symptoms[0].title}</h3>
             <p className="text-lg md:text-xl text-red-200 leading-relaxed">
@@ -113,7 +113,7 @@ export default function Home() {
           </div>
 
           {/* Card 5: Sintoma - Entorpecimento */}
-          <div className="fase-2-card opacity-0 absolute glass-card rounded-2xl p-8 md:p-12 space-y-5 w-full max-w-3xl transition-all duration-100 ease-out">
+          <div className="fase-2-card opacity-0 absolute glass-card rounded-2xl p-8 md:p-12 space-y-5 w-full max-w-3xl">
             <span className="text-xs md:text-sm font-bold tracking-widest text-brand-green uppercase">Dores Comuns</span>
             <h3 className="text-4xl md:text-5xl font-extrabold text-white">{content.symptoms[1].title}</h3>
             <p className="text-lg md:text-xl text-red-200 leading-relaxed">
@@ -129,7 +129,7 @@ export default function Home() {
           </div>
 
           {/* Card 6: Sintoma - Medos */}
-          <div className="fase-2-card opacity-0 absolute glass-card rounded-2xl p-8 md:p-12 space-y-5 w-full max-w-3xl transition-all duration-100 ease-out">
+          <div className="fase-2-card opacity-0 absolute glass-card rounded-2xl p-8 md:p-12 space-y-5 w-full max-w-3xl">
             <span className="text-xs md:text-sm font-bold tracking-widest text-brand-green uppercase">Dores Comuns</span>
             <h3 className="text-4xl md:text-5xl font-extrabold text-white">{content.symptoms[2].title}</h3>
             <p className="text-lg md:text-xl text-red-200 leading-relaxed">
@@ -144,7 +144,7 @@ export default function Home() {
           </div>
 
           {/* Card 7: Sintoma - Culpa */}
-          <div className="fase-2-card opacity-0 absolute glass-card rounded-2xl p-8 md:p-12 space-y-5 w-full max-w-3xl transition-all duration-100 ease-out">
+          <div className="fase-2-card opacity-0 absolute glass-card rounded-2xl p-8 md:p-12 space-y-5 w-full max-w-3xl">
             <span className="text-xs md:text-sm font-bold tracking-widest text-brand-green uppercase">Dores Comuns</span>
             <h3 className="text-4xl md:text-5xl font-extrabold text-white">{content.symptoms[3].title}</h3>
             <p className="text-lg md:text-xl text-red-200 leading-relaxed">
@@ -160,7 +160,7 @@ export default function Home() {
           </div>
 
           {/* Card 8: Sintoma - Vitimismo */}
-          <div className="fase-2-card opacity-0 absolute glass-card rounded-2xl p-8 md:p-12 space-y-5 w-full max-w-3xl transition-all duration-100 ease-out">
+          <div className="fase-2-card opacity-0 absolute glass-card rounded-2xl p-8 md:p-12 space-y-5 w-full max-w-3xl">
             <span className="text-xs md:text-sm font-bold tracking-widest text-brand-green uppercase">Dores Comuns</span>
             <h3 className="text-4xl md:text-5xl font-extrabold text-white">{content.symptoms[4].title}</h3>
             <p className="text-lg md:text-xl text-red-200 leading-relaxed">
